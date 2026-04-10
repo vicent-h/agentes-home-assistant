@@ -1,0 +1,5 @@
+# ignorar tudo no artifacts
+artifacts/*
+venv/*
+pycache/*
+__pycache__/*
