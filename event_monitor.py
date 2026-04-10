@@ -11,7 +11,7 @@ import threading
 from src.triggers import SaiuDeCasaTrigger, Trigger, TemperatureTrigger, JanelaAbertaFechadaTrigger
 from src.ha import HA, read_token
 from tools.tool_telegram import read_token_telegram
-from agent_conforto import run_agent as run_conforto_agent
+from agents.agent_conforto import run_agent as run_conforto_agent
 
 # Configurar logging
 logging.basicConfig(
