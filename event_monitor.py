@@ -10,7 +10,7 @@ import threading
 
 from src.triggers import SaiuDeCasaTrigger, Trigger, TemperatureTrigger, JanelaAbertaFechadaTrigger
 from src.ha import HA, read_token
-from tools.tool_telegram import read_token_telegram
+from tools.tool_telegram import read_chat_id_telegram, read_token_telegram
 from agents.agent_conforto import run_agent as run_conforto_agent
 
 # Configurar logging
@@ -20,7 +20,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 os.environ["TELEGRAM_TOKEN"] = read_token_telegram()  # Configurar token do Telegram para ferramentas que precisarem
-os.environ["TELEGRAM_CHAT_ID"] = "-5201409685"
+os.environ["TELEGRAM_CHAT_ID"] = read_chat_id_telegram()
 
 class EventMonitor:
     """

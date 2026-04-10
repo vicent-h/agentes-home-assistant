@@ -26,7 +26,14 @@ def read_token_telegram():
     if os.path.exists(token_file):
         with open(token_file, "r") as f:
             return f.read().strip()
+
+def read_chat_id_telegram():
+    """Lê o chat_id do Telegram de um arquivo ou variável de ambiente."""
+    chat_id_file = "artifacts/telegram_chat_id.txt"
     
+    if os.path.exists(chat_id_file):
+        with open(chat_id_file, "r") as f:
+            return f.read().strip()    
 
 def _get_telegram_bot():
     """Obtém a instância do bot do Telegram."""
