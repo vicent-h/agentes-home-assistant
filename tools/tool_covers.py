@@ -25,7 +25,8 @@ def consultar_posicao_das_cortinas() -> dict:
             "cover.persiana_do_quarto_curtain": ha.get_entity_state("cover.persiana_do_quarto_curtain")['attributes']['current_position'],
             "cover.persiana_do_escritorio_curtain": ha.get_entity_state("cover.persiana_do_escritorio_curtain")['attributes']['current_position'],
             "cover.porta_da_varanda_2": ha.get_entity_state("cover.porta_da_varanda_2")['attributes']['current_position'],
-            "cover.persiana_da_lavanderia_curtain": ha.get_entity_state("cover.persiana_da_lavanderia_curtain")['attributes']['current_position']
+            "cover.persiana_da_lavanderia_curtain": ha.get_entity_state("cover.persiana_da_lavanderia_curtain")['attributes']['current_position'],
+            "cover.janela_da_lavanderia": ha.get_entity_state("cover.janela_da_lavanderia")['attributes']['current_position'],
         }
         return entidades_cortinas
     except Exception as e:

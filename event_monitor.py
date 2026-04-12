@@ -11,7 +11,7 @@ import threading
 from src.triggers import SaiuDeCasaTrigger, Trigger, TemperatureTrigger, JanelaAbertaFechadaTrigger
 from src.ha import HA, read_token
 from tools.tool_telegram import read_chat_id_telegram, read_token_telegram
-from agents.agent_conforto import run_agent as run_conforto_agent
+from agents.agent_conforto import AgentConforto
 
 # Configurar logging
 logging.basicConfig(
@@ -41,7 +41,7 @@ class EventMonitor:
         
         self.triggers: List[Dict[str, Any]] = []
         self.agent_mapping: Dict[str, Callable] = {
-            'conforto': run_conforto_agent
+            'conforto': AgentConforto()
         }
         
         self.running = False
@@ -193,13 +193,17 @@ class EventMonitor:
             logger.error(f"Agente '{agent_name}' não registrado")
             return
         
-        agent_func = self.agent_mapping[agent_name]
+        agent = self.agent_mapping[agent_name]
+
+        if(agent.executando_atualmente()):
+            logger.info(f"Agente '{agent_name}' já está em execução, pulando nova execução")
+            return
         
         # Executar em thread separada para não bloquear o monitor
         def run_in_thread():
             try:
                 logger.info(f"Executando agente '{agent_name}' com tarefa:\n{task_description}")
-                result = agent_func(task_description)
+                result = agent.run_agent(task_description)
                 logger.info(f"Agente '{agent_name}' concluído com sucesso")
                 logger.debug(f"Resultado: {result}")
             except Exception as e:

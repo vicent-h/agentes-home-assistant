@@ -26,14 +26,14 @@ def obter_estado_atual_da_casa() -> dict:
     try:
         ha: HA = HA()
         estado_casa = {
-            "pessoas_em_casa": ha.get_entity_state("input_boolean.geral_status_em_casa"),
-            "esta_chovendo": ha.get_entity_state("input_boolean.modo_chuva"),
-            "alguem_dormindo": ha.get_entity_state("input_boolean.modo_boa_noite"),
-            "alguem_no_banho": ha.get_entity_state("input_boolean.modo_banho"),
-            "alguem_no_banheiro": ha.get_entity_state("input_boolean.switch_movimento_do_banheiro"),
-            "privacidade": ha.get_entity_state("input_boolean.modo_privacidade"),
-            "ha_visita_em_casa": ha.get_entity_state("input_boolean.modo_visitante"),
-            "faxinando_no_momento": ha.get_entity_state("input_boolean.modo_faxina"),
+            "pessoas_em_casa": ha.get_entity_state("input_boolean.geral_status_em_casa")['state'] == "on",
+            "esta_chovendo": ha.get_entity_state("input_boolean.modo_chuva")['state'] == "on",
+            "alguem_dormindo": ha.get_entity_state("input_boolean.modo_boa_noite")['state'] == "on",
+            "alguem_no_banho": ha.get_entity_state("input_boolean.modo_banho")['state'] == "on",
+            "alguem_no_banheiro": ha.get_entity_state("input_boolean.switch_movimento_do_banheiro")['state'] == "on",
+            "privacidade": ha.get_entity_state("input_boolean.modo_privacidade")['state'] == "on",
+            "ha_visita_em_casa": ha.get_entity_state("input_boolean.modo_visitante")['state'] == "on",
+            "faxinando_no_momento": ha.get_entity_state("input_boolean.modo_faxina")['state'] == "on",
         }
         return estado_casa
     except Exception as e:

@@ -98,12 +98,13 @@ class HA:
         """
         return self._request("GET", "/states")
     
-    def get_entity_state(self, entity_id: str) -> Dict[str, Any]:
+    def get_entity_state(self, entity_id: str, keys_needed: List[str] = None) -> Dict[str, Any]:
         """
         Busca o estado atual de uma entidade específica.
         
         Args:
             entity_id: ID da entidade (ex: 'light.sala', 'sensor.temperatura')
+            keys_needed: Lista de chaves que devem ser incluídas no resultado
             
         Returns:
             Dicionário contendo o estado e atributos da entidade
@@ -117,7 +118,16 @@ class HA:
             >>> print(state['state'])
             'on'
         """
-        return self._request("GET", f"/states/{entity_id}")
+        situacao = self._request("GET", f"/states/{entity_id}")
+
+        if not situacao:
+            raise Exception(f"Entidade {entity_id} não encontrada")
+        
+        if keys_needed is None:
+            return situacao
+        
+        resultado = {key: situacao.get(key) for key in keys_needed if key in situacao}
+        return resultado
     
     def get_all_states(self) -> Dict[str, Any]:
         """

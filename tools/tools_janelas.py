@@ -14,15 +14,15 @@ def consultar_situacao_janelas() -> dict:
             "janela_do_escritorio": "fechada"
         }
 
-        A chave do dicionário é o entity_id da janela e o valor é a situação atual ("aberta" ou "fechada").
+        A chave do dicionário é o entity_id da janela e o valor é a situação atual ("aberta" ou "fechada"), respectivamente (True ou False).
     """
     try:
         ha: HA = HA()
         janelas = {
-            "janela_da_lavanderia": ha.get_entity_state("input_boolean.janela_da_lavanderia_grupo"),
-            "janela_do_quarto": ha.get_entity_state("input_boolean.janela_do_quarto_grupo"),
-            "janela_do_escritorio": ha.get_entity_state("input_boolean.janela_do_escritorio_grupo"),
-            "porta_da_varanda": ha.get_entity_state("input_boolean.porta_da_varanda_grupo"),
+            "janela_da_lavanderia": ha.get_entity_state("input_boolean.janela_da_lavanderia_grupo")['state'] == "on",
+            "janela_do_quarto": ha.get_entity_state("input_boolean.janela_do_quarto_grupo")['state'] == "on",
+            "janela_do_escritorio": ha.get_entity_state("input_boolean.janela_do_escritorio_grupo")['state'] == "on",
+            "porta_da_varanda": ha.get_entity_state("input_boolean.porta_da_varanda_grupo")['state'] == "on",
         }
         return janelas
     except Exception as e:

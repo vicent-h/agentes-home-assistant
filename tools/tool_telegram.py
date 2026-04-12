@@ -1,3 +1,4 @@
+import datetime
 import os
 import asyncio
 import logging
@@ -289,6 +290,7 @@ def aguardar_confirmacao_telegram(
             loop.run_until_complete(
                 bot.send_message(chat_id=chat_id, text=f"{mensagem_confirmacao}\n\nResponda com 'sim' ou 'não'")
             )
+            agora = datetime.utcnow()
             
             # Aguardar resposta com timeout - loop até timeout total
             inicio = time.time()
@@ -298,28 +300,22 @@ def aguardar_confirmacao_telegram(
                     bot.get_updates(offset=_last_update_id, timeout=10)
                 )
                 print("Updates recebidos:", updates)
-                
                 for update in updates:
                     _last_update_id = update.update_id + 1
                     print(f"Update recebido: {update}")
-                    if update.message and update.message.chat_id == int(chat_id):
+                    # a data do update precisa ser
+                    if (
+                        update.message
+                        and update.message.chat_id == int(chat_id)
+                        and update.message.date > agora
+                    ):
                         print(f"Resposta recebida: {update.message.text} (de {update.message.from_user.username})")
                         resposta = update.message.text.lower().strip()
                         
-                        if "sim" in resposta or "yes" in resposta or "✅" in resposta:
-                            return {
-                                "confirmado": True,
-                                "resposta": "sim",
-                                "mensagem": update.message.text,
-                                "chat_id": chat_id
-                            }
-                        elif "não" in resposta or "no" in resposta or "nao" in resposta or "❌" in resposta:
-                            return {
-                                "confirmado": False,
-                                "resposta": "não",
-                                "mensagem": update.message.text,
-                                "chat_id": chat_id
-                            }
+                        return {
+                            "mensagem": update.message.text,
+                            "chat_id": chat_id
+                        }
                             
             # Timeout
             return {
