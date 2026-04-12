@@ -11,9 +11,9 @@ from typing import List
 
 from smolagents import tool
 
-FILE_PREFERENCES_USUARIO = "preferencias_usuario.txt"
-QTDE_TAGS = 5
-TOP_N_RELEVANTES = 3
+FILE_PREFERENCES_USUARIO = os.environ.get("FILE_PREFERENCES_USUARIO")
+QTDE_TAGS = os.environ.get("QTDE_TAGS", 5)
+TOP_N_RELEVANTES = os.environ.get("TOP_N_RELEVANTES", 3)
 
 @tool
 def criar_memoria(

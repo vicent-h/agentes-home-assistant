@@ -132,6 +132,8 @@ class AgentConforto:
     1. criar_memoria(content, tags) - para criar uma memória do que foi identificado, o que o agente fez, e o que o usuário pediu. As tags são palavras-chave relacionadas ao conteúdo da memória, separadas por vírgula.
     2. Atualizar as preferências do usuário usando 'atualizar_preferencias_usuario()' observando as respostas do usuário para melhorar a experiência futura.
 
+    Caso a preferência do usuário for diferente do que foi identificado, procure entender o motivo da divergência, e se necessário, adicione ou modifique as preferências do usuário usando 'atualizar_preferencias_usuario()' para melhorar a experiência futura.
+
     Dê preferencia para abrir a janela da lavanderia e o porta da varanda, pois são os cômodos mais arejados da casa. Evite abrir a janela do quarto para não comprometer a privacidade.
 
         """.strip()
