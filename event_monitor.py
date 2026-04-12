@@ -21,6 +21,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 os.environ["TELEGRAM_TOKEN"] = read_token_telegram()  # Configurar token do Telegram para ferramentas que precisarem
 os.environ["TELEGRAM_CHAT_ID"] = read_chat_id_telegram()
+os.environ['MEMORY_PATH'] = "D:/Memories"
 
 class EventMonitor:
     """

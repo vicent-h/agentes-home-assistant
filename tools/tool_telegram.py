@@ -1,4 +1,5 @@
-import datetime
+from datetime import datetime, timezone
+
 import os
 import asyncio
 import logging
@@ -290,7 +291,7 @@ def aguardar_confirmacao_telegram(
             loop.run_until_complete(
                 bot.send_message(chat_id=chat_id, text=f"{mensagem_confirmacao}\n\nResponda com 'sim' ou 'não'")
             )
-            agora = datetime.utcnow()
+            agora = datetime.now(timezone.utc)
             
             # Aguardar resposta com timeout - loop até timeout total
             inicio = time.time()
@@ -299,10 +300,8 @@ def aguardar_confirmacao_telegram(
                 updates = loop.run_until_complete(
                     bot.get_updates(offset=_last_update_id, timeout=10)
                 )
-                print("Updates recebidos:", updates)
                 for update in updates:
                     _last_update_id = update.update_id + 1
-                    print(f"Update recebido: {update}")
                     # a data do update precisa ser
                     if (
                         update.message

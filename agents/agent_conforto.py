@@ -9,6 +9,12 @@ from tools.tool_telegram import (
     enviar_mensagem_telegram, 
     aguardar_confirmacao_telegram
 )
+from tools.tool_create_memory import (
+    criar_memoria, 
+    ler_memoria_similar, 
+    ler_preferencias_usuario, 
+    atualizar_preferencias_usuario
+)
 from smolagents import CodeAgent, tool
 from smolagents.models import OpenAIModel 
 
@@ -46,7 +52,11 @@ class AgentConforto:
             obter_clima_da_casa, 
             consultar_situacao_janelas,
             aguardar_confirmacao_telegram,
-            enviar_mensagem_telegram
+            enviar_mensagem_telegram,
+            criar_memoria, 
+            ler_memoria_similar, 
+            ler_preferencias_usuario, 
+            atualizar_preferencias_usuario
         ]
 
         # Criar modelo DeepSeek (compatível com OpenAI API)
@@ -61,7 +71,11 @@ class AgentConforto:
             tools=tools,
             model=deepseek_model,
             #limitar steps para evitar loops infinitos
-            max_steps=5,
+            max_steps=10,
+            additional_authorized_imports=[
+                "datetime",
+                "math",
+            ],
         )
         
         # Adicionar instruções de sistema à tarefa
@@ -87,6 +101,8 @@ class AgentConforto:
     - Calor + janela aberta + abertura aberta → nada a fazer (já está circulando)
     - Janela fechada + abertura aberta → não feche (deixa luz entrar)
 
+    Os covers porta da varanda e janela da lavanderia abrem as janelas, então elas tem poderes de abrir a janela, mesmo que estejam fechadas.
+
     Exemplos quando não há pessoas em casa:
     - Calor + abertura fechada + janela fechada → não abra (ar não vai conseguir circular)
     - Calor + abertura fechada + janela aberta → abra 20% da abertura (para deixar um pouco de ar circular e evitar exposição da casa)
@@ -105,10 +121,19 @@ class AgentConforto:
     4. Sempre comunique o resultado final ao usuário pelo enviar_mensagem_telegram()
 
     Exemplo de fluxo:
-    1. Enviar: "Vou abrir a persiana da sala em 70%"
-    2. Aguardar: resposta do usuário (sim/não)
-    3. Se sim: Executar ações
-    4. Se não: Cancelar e informar
+    0. Leia as memorias anteriores usando 'ler_memoria_similar()' para verificar se há informações relevantes sobre as preferências do usuário ou situações similares.
+    1. Leia as preferências do usuário usando 'ler_preferencias_usuario()' para entender melhor as preferências específicas do usuário em relação ao conforto térmico.
+    2. Enviar: "Vou abrir a persiana da sala em 70%"
+    3. Aguardar: resposta do usuário (sim/não)
+    4. Se sim: Executar ações
+    5. Se não: Cancelar e informar
+
+    Ao final, você deve resumir o que foi feito, utilizando as seguintes funções:
+    1. criar_memoria(content, tags) - para criar uma memória do que foi identificado, o que o agente fez, e o que o usuário pediu. As tags são palavras-chave relacionadas ao conteúdo da memória, separadas por vírgula.
+    2. Atualizar as preferências do usuário usando 'atualizar_preferencias_usuario()' observando as respostas do usuário para melhorar a experiência futura.
+
+    Dê preferencia para abrir a janela da lavanderia e o porta da varanda, pois são os cômodos mais arejados da casa. Evite abrir a janela do quarto para não comprometer a privacidade.
+
         """.strip()
         
         # Combinar instruções do sistema com a tarefa
