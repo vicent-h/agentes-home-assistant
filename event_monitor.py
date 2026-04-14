@@ -1,4 +1,5 @@
 import os
+
 import asyncio
 import websockets
 import json
@@ -17,6 +18,15 @@ from src.triggers import (
 )
 from src.ha import HA, read_token
 from tools.tool_telegram import read_chat_id_telegram, read_token_telegram
+
+os.environ["TELEGRAM_TOKEN"] = read_token_telegram()  # Configurar token do Telegram para ferramentas que precisarem
+os.environ["TELEGRAM_CHAT_ID"] = read_chat_id_telegram()
+os.environ['MEMORY_PATH'] = "/media/alvarinho/dados/Memories"
+os.environ["QTDE_TAGS"] = "5"
+os.environ["TOP_N_RELEVANTES"] = "3"
+os.environ["FILE_PREFERENCES_USUARIO"] = "preferencias_usuario.txt"
+os.environ["PATH_ECHO"] = "/media/alvarinho/dados/Echos"
+
 from agents.agent_conforto import AgentConforto
 from agents.agent_volume_echos import AgentVolumeEchos
 
@@ -26,13 +36,6 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
-os.environ["TELEGRAM_TOKEN"] = read_token_telegram()  # Configurar token do Telegram para ferramentas que precisarem
-os.environ["TELEGRAM_CHAT_ID"] = read_chat_id_telegram()
-os.environ['MEMORY_PATH'] = "D:/Memories"
-os.environ["QTDE_TAGS"] = "5"
-os.environ["TOP_N_RELEVANTES"] = "3"
-os.environ["FILE_PREFERENCES_USUARIO"] = "preferencias_usuario.txt"
-os.environ["PATH_ECHO"] = "D:/Echos"
 
 class EventMonitor:
     """

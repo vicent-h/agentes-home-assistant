@@ -11,9 +11,10 @@ from typing import List
 
 from smolagents import tool
 
-FILE_PREFERENCES_USUARIO = os.environ.get("FILE_PREFERENCES_USUARIO")
-QTDE_TAGS = os.environ.get("QTDE_TAGS", 5)
-TOP_N_RELEVANTES = os.environ.get("TOP_N_RELEVANTES", 3)
+FILE_PREFERENCES_USUARIO = os.environ["FILE_PREFERENCES_USUARIO"]
+QTDE_TAGS = int(os.environ.get("QTDE_TAGS", 5))
+TOP_N_RELEVANTES = int(os.environ.get("TOP_N_RELEVANTES", 3))
+PATH_MEMORY = os.environ["MEMORY_PATH"]
 
 @tool
 def criar_memoria(
@@ -55,7 +56,7 @@ def criar_memoria(
     filename = f"MEMORY_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.txt"
     filepath = os.path.join(memory_path, filename)
     
-    with open(filepath, 'w') as f:
+    with open(filepath, 'w', encoding='utf-8') as f:
         json.dump(memory, f, indent=4, ensure_ascii=False)
     
     return filepath
@@ -66,25 +67,28 @@ def ler_memoria_similar(tags: List[str]) -> str:
     Lê as memórias salvas e retorna aquelas que possuem tags similares às fornecidas.
 
     Args:
-        tags (List[str]): As tags para buscar memórias similares.
+        tags (List[str]): As tags para buscar memórias similares, listadas em uma lista de palavras-chave.
+            Exemplo: ["volume", "echo", "sala"] ou ["cortina", "quarto", "ruído externo"]
     Returns:
         str: As memórias similares encontradas em texto corrido (resumo).
     """
     
     # a relevancia das memórias pode ser determinada pela quantidade de tags similares, ou seja, quanto mais tags em comum, mais relevante é a memória para a situação atual.
     memories = []
-    memory_path = os.getenv('MEMORY_PATH')
-    if os.path.exists(memory_path):
-        for filename in os.listdir(memory_path):
+    if os.path.exists(PATH_MEMORY):
+        for filename in os.listdir(PATH_MEMORY):
             if filename.endswith(".txt") and filename.startswith("MEMORY_"):
-                with open(os.path.join(memory_path, filename), 'r') as f:
-                    memory = json.load(f)
-                    memory_tags = set(memory.get("tags", []))
-                    input_tags = set(tags)
-                    common_tags = memory_tags.intersection(input_tags)
-                    relevance = len(common_tags)
-                    if relevance > 0:
-                        memories.append((relevance, memory))
+                try:
+                    with open(os.path.join(PATH_MEMORY, filename), 'r', encoding='utf-8') as f:
+                        memory = json.load(f)
+                        memory_tags = set(memory.get("tags", []))
+                        input_tags = set(tags)
+                        common_tags = memory_tags.intersection(input_tags)
+                        relevance = len(common_tags)
+                        if relevance > 0:
+                            memories.append((relevance, memory))
+                except Exception as e:
+                    print(f"Erro ao ler memória {filename}: {str(e)}")
     
     # Ordenar memórias por relevância e retornar as top N
     memories.sort(key=lambda x: x[0], reverse=True)
@@ -102,9 +106,9 @@ def ler_preferencias_usuario() -> str:
     Returns:
         str: As preferências e perfil do usuário em texto corrido (resumo).
     """
-    preferencias_path = os.path.join(os.getenv('MEMORY_PATH'), FILE_PREFERENCES_USUARIO)
+    preferencias_path = os.path.join(PATH_MEMORY, FILE_PREFERENCES_USUARIO)
     if os.path.exists(preferencias_path):
-        with open(preferencias_path, 'r') as f:
+        with open(preferencias_path, 'r', encoding='utf-8') as f:
             preferencias = f.read()
             return preferencias
     else:
@@ -121,8 +125,8 @@ def atualizar_preferencias_usuario(preferencias: str) -> str:
     Returns:
         str: As preferências do usuário atualizada em texto corrido (resumo).
     """
-    preferencias_path = os.path.join(os.getenv('MEMORY_PATH'), FILE_PREFERENCES_USUARIO)
-    with open(preferencias_path, 'w') as f:
+    preferencias_path = os.path.join(PATH_MEMORY, FILE_PREFERENCES_USUARIO)
+    with open(preferencias_path, 'w', encoding='utf-8') as f:
         f.write(preferencias)
 
     

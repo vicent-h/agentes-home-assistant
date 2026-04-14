@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from tools.tool_covers import consultar_posicao_das_cortinas
 from tools.tools_janelas import consultar_situacao_janelas
-from tools.tool_volume_echos import consultar_volume_echo, set_volume_echo
+from tools.tool_echos import consultar_volume_echo, set_volume_echo
 from src.ha import read_token, read_token_deepseek
 from tools.tool_telegram import (
     enviar_mensagem_telegram, 
