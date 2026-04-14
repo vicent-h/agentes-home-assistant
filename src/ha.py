@@ -118,7 +118,11 @@ class HA:
             >>> print(state['state'])
             'on'
         """
+        
         situacao = self._request("GET", f"/states/{entity_id}")
+
+        if self._entities_with_areas and entity_id in self._entities_with_areas:
+            situacao['area'] = self._entities_with_areas[entity_id].get('area_name')
 
         if not situacao:
             raise Exception(f"Entidade {entity_id} não encontrada")

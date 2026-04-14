@@ -8,10 +8,17 @@ from typing import List, Dict, Callable, Any
 from pathlib import Path
 import threading
 
-from src.triggers import SaiuDeCasaTrigger, Trigger, TemperatureTrigger, JanelaAbertaFechadaTrigger
+from src.triggers import (
+    ModoDesligadoTempo,
+    Trigger, 
+    TemperatureTrigger, 
+    JanelaAbertaFechadaTrigger, 
+    EntidadeDesligadaTrigger
+)
 from src.ha import HA, read_token
 from tools.tool_telegram import read_chat_id_telegram, read_token_telegram
 from agents.agent_conforto import AgentConforto
+from agents.agent_volume_echos import AgentVolumeEchos
 
 # Configurar logging
 logging.basicConfig(
@@ -46,7 +53,8 @@ class EventMonitor:
         
         self.triggers: List[Dict[str, Any]] = []
         self.agent_mapping: Dict[str, Callable] = {
-            'conforto': AgentConforto()
+            'conforto': AgentConforto(),
+            'volume_echos': AgentVolumeEchos()
         }
         
         self.running = False
@@ -244,7 +252,7 @@ def create_monitor_with_triggers() -> EventMonitor:
         agent_name='conforto'
     )
 
-    trigger_saida_1h = SaiuDeCasaTrigger(minutos_decorridos=60, margem_minutos=5)
+    trigger_saida_1h = ModoDesligadoTempo(minutos_decorridos=60, margem_minutos=5)
     monitor.register_trigger(
         trigger=trigger_saida_1h,
         entity_ids=["input_boolean.geral_status_em_casa"],
@@ -263,6 +271,28 @@ def create_monitor_with_triggers() -> EventMonitor:
             ],  # Ajustar conforme necessário
         agent_name='conforto'
     )
+    monitor.register_trigger(
+        trigger=janela_trigger,
+        entity_ids=[
+            'input_boolean.janela_do_quarto_grupo', 
+            'input_boolean.janela_do_escritorio_grupo',
+            'input_boolean.janela_da_lavanderia_grupo',
+            'input_boolean.porta_da_varanda_grupo'
+            ],  # Ajustar conforme necessário
+        agent_name='volume_echos'
+    )
+
+    # Exemplo: Monitorar descalibragem dos volumes dos Echos Pops
+    descalibragem_trigger = EntidadeDesligadaTrigger()
+    monitor.register_trigger(
+        trigger=descalibragem_trigger,
+        entity_ids=[
+            'input_boolean.geral_status_em_casa',
+            'input_boolean.modo_banho',
+        ],  # Ajustar conforme necessário
+        agent_name='volume_echos'
+    )
+    
     
     return monitor
 

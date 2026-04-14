@@ -115,7 +115,7 @@ Ação requerida: Processar a mudança de estado da janela e ajustar dispositivo
         
         return {'triggered': True, 'task_description': task_description}
 
-class SaiuDeCasaTrigger(Trigger):
+class ModoDesligadoTempo(Trigger):
     """
     Trigger que dispara quando a pessoa sai de casa por mais de um tempo específico.
     
@@ -190,3 +190,29 @@ Processar saída de casa e ajustar dispositivos conforme necessário.
                 return {'triggered': True, 'task_description': task_description}
         
         return {'triggered': False, 'task_description': None}
+    
+class EntidadeDesligadaTrigger(Trigger):
+    def __init__(self):
+        super().__init__(name="EntidadeDesligadaTrigger")
+
+    def check_condition(self, entity_id: str, old_state: str, new_state: str, timestamp: datetime) -> dict:
+        """
+        Verifica se a entidade foi desligada (estado "on" → "off").
+        
+        Args:
+            entity_id: ID da entidade
+            old_state: Estado anterior ('on', 'off', etc)
+            new_state: Estado atual ('on', 'off', etc)
+            timestamp: Horário da mudança
+            
+        Returns:
+            dict com trigger disparado e descrição da tarefa
+        """
+        if old_state == "on" and new_state == "off":
+            task_description = f"""
+Evento: Entidade Desligada
+Entidade: {entity_id}
+Horário: {timestamp.isoformat()}
+Ação requerida: Processar a mudança de estado da entidade e ajustar dispositivos conforme necessário.
+            """.strip()
+            return {'triggered': True, 'task_description': task_description}

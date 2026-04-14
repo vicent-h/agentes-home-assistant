@@ -3,3 +3,4 @@ artifacts/*
 venv/*
 pycache/*
 __pycache__/*
+.venv/*
