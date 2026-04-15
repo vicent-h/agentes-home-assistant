@@ -17,15 +17,14 @@ from src.triggers import (
     EntidadeDesligadaTrigger
 )
 from src.ha import HA, read_token
-from tools.tool_telegram import read_chat_id_telegram, read_token_telegram
+from tools.tool_telegram import read_chat_id_telegram
 
-os.environ["TELEGRAM_TOKEN"] = read_token_telegram()  # Configurar token do Telegram para ferramentas que precisarem
 os.environ["TELEGRAM_CHAT_ID"] = read_chat_id_telegram()
-os.environ['MEMORY_PATH'] = "/media/alvarinho/dados/Memories"
+os.environ['MEMORY_PATH'] = "D:/Memories"
 os.environ["QTDE_TAGS"] = "5"
 os.environ["TOP_N_RELEVANTES"] = "3"
 os.environ["FILE_PREFERENCES_USUARIO"] = "preferencias_usuario.txt"
-os.environ["PATH_ECHO"] = "/media/alvarinho/dados/Echos"
+os.environ["PATH_ECHO"] = "D:/Echos"
 
 from agents.agent_conforto import AgentConforto
 from agents.agent_volume_echos import AgentVolumeEchos

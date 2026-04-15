@@ -6,8 +6,9 @@ from tools.tools_estados import obter_estado_atual_da_casa
 from tools.tools_janelas import consultar_situacao_janelas
 from src.ha import read_token, read_token_deepseek
 from tools.tool_telegram import (
-    enviar_mensagem_telegram, 
-    aguardar_confirmacao_telegram
+    criar_tool_finalizar_conversa,
+    criar_tool_aguardar_confirmacao_telegram,
+    criar_tool_enviar_mensagem_telegram
 )
 from tools.tool_create_memory import (
     criar_memoria, 
@@ -41,18 +42,22 @@ class AgentConforto:
     def stop(self):
         self.executando = False
         return "Agente de Conforto Térmico parado."
+    
+    def nome_agent(self):
+        return "Agente Conforto"
 
     def run_agent(self, task):
         # Preparar a lista de ferramentas disponíveis
         self.start()
         tools = [
+            criar_tool_finalizar_conversa(self.nome_agent()),
+            criar_tool_aguardar_confirmacao_telegram(self.nome_agent()),
+            criar_tool_enviar_mensagem_telegram(self.nome_agent()),
             consultar_posicao_das_cortinas, 
             abrir_multiplas_cortinas_posicao, 
             obter_estado_atual_da_casa, 
             obter_clima_da_casa, 
             consultar_situacao_janelas,
-            aguardar_confirmacao_telegram,
-            enviar_mensagem_telegram,
             criar_memoria, 
             ler_memoria_similar, 
             ler_preferencias_usuario, 
@@ -71,7 +76,7 @@ class AgentConforto:
             tools=tools,
             model=deepseek_model,
             #limitar steps para evitar loops infinitos
-            max_steps=10,
+            max_steps=30,
             additional_authorized_imports=[
                 "datetime",
                 "math",
@@ -120,6 +125,8 @@ class AgentConforto:
     - Se timeout: Cancele as ações e informe o timeout
     4. Sempre comunique o resultado final ao usuário pelo enviar_mensagem_telegram()
 
+    Dê preferencia para abrir a janela da lavanderia e o porta da varanda, pois são os cômodos mais arejados da casa. Evite abrir a janela do quarto para não comprometer a privacidade.
+
     Exemplo de fluxo:
     0. Leia as memorias anteriores usando 'ler_memoria_similar()' para verificar se há informações relevantes sobre as preferências do usuário ou situações similares.
     1. Leia as preferências do usuário usando 'ler_preferencias_usuario()' para entender melhor as preferências específicas do usuário em relação ao conforto térmico.
@@ -127,15 +134,16 @@ class AgentConforto:
     3. Aguardar: resposta do usuário (sim/não)
     4. Se sim: Executar ações
     5. Se não: Cancelar e informar
+    6. Finalize a conversa utilizando a ferramenta finalizar_conversa()
 
     Ao final, você deve resumir o que foi feito, utilizando as seguintes funções:
     1. criar_memoria(content, tags) - para criar uma memória do que foi identificado, o que o agente fez, e o que o usuário pediu. As tags são palavras-chave relacionadas ao conteúdo da memória, separadas por vírgula.
     2. Atualizar as preferências do usuário usando 'atualizar_preferencias_usuario()' observando as respostas do usuário para melhorar a experiência futura.
 
-    Caso a preferência do usuário for diferente do que foi identificado, procure entender o motivo da divergência, e se necessário, adicione ou modifique as preferências do usuário usando 'atualizar_preferencias_usuario()' para melhorar a experiência futura.
+    Caso a preferência do usuário for diferente do que foi identificado, procure entender o motivo da divergência, adicione ou modifique as preferências do usuário usando 'atualizar_preferencias_usuario()' para melhorar a experiência futura, DETALHADAMENTE.
 
-    Dê preferencia para abrir a janela da lavanderia e o porta da varanda, pois são os cômodos mais arejados da casa. Evite abrir a janela do quarto para não comprometer a privacidade.
-
+    NÃO ESQUEÇA DE FINALIZAR A CONVERSA.
+    USE PRINCIPALMENTE AS PREFERÊNCIAS DO USUÁRIO PARA TOMADA DE DECISÃO, E TAMBÉM AS MEMÓRIAS SIMILARES.
         """.strip()
         
         # Combinar instruções do sistema com a tarefa
